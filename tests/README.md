@@ -48,7 +48,7 @@ To run the entire test suite:
     - ```./tests/run.sh tox [options]```
 
 - Without tox (will run against current interpreter)
-  - ```./tests/run_all.sh```
+  - ```./tests/run.sh```
 
 To run a specific `mode` or set of `modes` use the following syntax
 

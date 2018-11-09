@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-set -eu
+#!/usr/bin/env bash -eu
 
 cleanup() {
         ${DOCKER_BIN}/cluster_down.sh
@@ -18,10 +17,6 @@ fi
 #start cluster
 ${DOCKER_BIN}/cluster_up.sh
 
-if [[ $? -ne 0 ]]; then
-    exit 1
-fi
-
 run_tox() {
     echo "Executing tox $@"
     cd ${TEST_SOURCE}/..
@@ -29,6 +24,7 @@ run_tox() {
 }
 
 run_native() {
+    python setup.py install
     for mode in "$@"; do
         modes="${modes:-} --${mode}"
     done

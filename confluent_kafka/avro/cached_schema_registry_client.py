@@ -29,6 +29,16 @@ from requests import Session, utils
 from .error import ClientError
 from . import loads
 
+import sys
+
+PY3 = sys.version_info[0] == 3
+
+# Python 2 considers int an instance of str
+if PY3:
+    string_types = str,
+else:
+    string_types = basestring,
+
 VALID_LEVELS = ['NONE', 'FULL', 'FORWARD', 'BACKWARD']
 VALID_METHODS = ['GET', 'POST', 'PUT', 'DELETE']
 VALID_AUTH_PROVIDERS = ['URL', 'USER_INFO', 'SASL_INHERIT']
@@ -62,6 +72,7 @@ class CachedSchemaRegistryClient(object):
         # In order to maintain compatibility the url(conf in future versions) param has been preserved for now.
         conf = url
         if not isinstance(url, dict):
+
             conf = {
                 'url': url,
                 'ssl.ca.location': ca_location,
@@ -79,7 +90,8 @@ class CachedSchemaRegistryClient(object):
         """Construct a Schema Registry client"""
 
         # Ensure URL valid scheme is included; http[s]
-        if not conf.get('url', '').startswith('http'):
+        url = conf.get('url', '')
+        if not isinstance(url, string_types) or not url.startswith('http'):
             raise ValueError("Invalid URL provided for Schema Registry")
 
         # subj => { schema => id }
@@ -98,7 +110,7 @@ class CachedSchemaRegistryClient(object):
         self._session = s
 
         if len(conf) > 0:
-            raise ValueError("Unrecognized configuration key(s): {}".format(conf.keys()))
+            raise ValueError("Unrecognized configuration properties: {}".format(conf.keys()))
 
     def __del__(self):
         self.close()
